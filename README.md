@@ -1,3 +1,7 @@
+# Introduction
+
+I'm following a small subset of the paper "KAN: Kolmogorov–Arnold Networks" on Arxiv with people from MIT, CalTech, and Northeastern University.
+
 # Installation
 
 In this project I need to use `pip`, since `torch` has a hard time to work with `poetry`.
@@ -25,7 +29,7 @@ conda install matplotlib
 
 Without the `conda-forge` options, I get trouble just as for the PyPI installation.
 
-I'm following a small subset of the paper "KAN: Kolmogorov–Arnold Networks" on Arxiv with people from MIT, CalTech, and Northeastern University.
+# Some examples
 
 An output $y_i$ can be expressed in it's input $x_j$ by
 
