@@ -10,8 +10,8 @@ iris = load_iris()
 X, y = iris.data, iris.target
 x_data = torch.tensor(X, dtype=torch.float32)
 y_data = torch.tensor(y, dtype=torch.long)
-lb = torch.min(x_data,dim=1).values-0.2
-ub = torch.max(x_data,dim=1).values+0.2
+lb = torch.min(x_data,dim=0).values-0.1
+ub = torch.max(x_data,dim=0).values+0.1
 
 def param_dump(model):
     for name, par in model.named_parameters():
@@ -26,7 +26,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(kanMxN.parameters(), lr=0.01)
 
 # Training loop
-num_epochs = 2500
+num_epochs = 500
 num_batch = 5
 for epoch in range(num_epochs):
     for batch in range(num_batch):
