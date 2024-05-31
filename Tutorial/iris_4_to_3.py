@@ -7,7 +7,7 @@ from sklearn.datasets import load_iris
 from Tutorial.kan_mxn import KanMxN
 
 iris = load_iris()
-X, y = iris.data, iris.target
+X, y = iris.data.T, iris.target
 x_data = torch.tensor(X, dtype=torch.float32)
 y_data = torch.tensor(y, dtype=torch.long)
 lb = torch.min(x_data,dim=0).values-0.1
@@ -26,13 +26,12 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(kanMxN.parameters(), lr=0.01)
 
 # Training loop
-num_epochs = 500
+num_epochs = 1500
 num_batch = 5
 for epoch in range(num_epochs):
     for batch in range(num_batch):
-        x_data_batch = x_data[batch::num_batch]
+        x_data_batch = x_data[:,batch::num_batch]
         y_data_batch = y_data[batch::num_batch]
-
         # Zero the gradients
         optimizer.zero_grad()
 
@@ -40,7 +39,7 @@ for epoch in range(num_epochs):
         y_pred = kanMxN(x_data_batch)
 
         # Compute loss
-        loss = criterion(y_pred, y_data_batch)
+        loss = criterion(y_pred.T, y_data_batch)
 
         # Backward pass
         loss.backward()
@@ -54,6 +53,5 @@ for epoch in range(num_epochs):
 
 kanMxN.plot()
 y_pred = kanMxN(x_data)
-
-print(f"Misclassified: {torch.sum(torch.argmax(y_pred, dim=1)!=y_data)} / {y_data.size(0)}")
+print(f"Misclassified: {torch.sum(torch.argmax(y_pred, dim=0)!=y_data)} / {y_data.size(0)}")
 param_dump(kanMxN)

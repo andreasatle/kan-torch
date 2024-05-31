@@ -16,10 +16,9 @@ def exact_zz_solution(x):
     return 2.0 + 0.5*torch.sqrt(x) + 0.7*torch.cos(x-0.2)
 
 x_data = torch.linspace(3, 13, 100)
-exact_solution = torch.stack([exact_y_solution(x_data), exact_z_solution(x_data), exact_zz_solution(x_data)], dim=1)
-xx_data = torch.stack([x_data,x_data,x_data],dim=1)
+exact_solution = torch.stack([exact_y_solution(x_data), exact_z_solution(x_data), exact_zz_solution(x_data)], dim=0)
+xx_data = torch.stack([x_data,x_data,x_data],dim=0)
 y_data = exact_solution + torch.randn_like(exact_solution) * 0.1
-
 
 # Instantiate the Kan1xN model
 xa, xb = torch.min(x_data), torch.max(x_data)
@@ -39,7 +38,7 @@ num_batches = 5
 for epoch in range(num_epochs):
     for batch in range(num_batches):
         x_data_batch = x_data[batch::num_batches]
-        y_data_batch = y_data[batch::num_batches,:]
+        y_data_batch = y_data[:,batch::num_batches]
 
         # Zero the gradients
         optimizer.zero_grad()
@@ -64,7 +63,7 @@ for epoch in range(num_epochs):
 knot_data = torch.stack([kan1xN.knots[2:-2], kan1xN.knots[2:-2], kan1xN.knots[2:-2]],dim=1)
 plt.scatter(xx_data, y_data, label='Data')
 plt.scatter(knot_data, kan1xN(kan1xN.knots[2:-2]).detach().numpy(), color='red', label='Fitted knots')
-plt.plot(xx_data, kan1xN(x_data).detach().numpy(), color='red', label='Fitted model')
-plt.plot(xx_data, exact_solution.detach().numpy(), color='green', label='Exact solution')
+plt.plot(xx_data.T, kan1xN(x_data).detach().numpy().T, color='red', label='Fitted model')
+plt.plot(xx_data.T, exact_solution.detach().numpy().T, color='green', label='Exact solution')
 plt.legend()
 plt.show()

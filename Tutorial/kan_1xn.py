@@ -38,4 +38,4 @@ class Kan1xN(nn.Module):
         return (b-a)*torch.cat((torch.zeros(self.degree),torch.linspace(0,1,self.n_params-self.degree),torch.ones(self.degree))) + a
 
     def forward(self, x):
-        return self.eval_basis(x) @ self.params
+        return (self.eval_basis(x) @ self.params).T
