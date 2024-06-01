@@ -57,3 +57,29 @@ Since the splines regularize the data, I'm not as concerned with overfitting as 
 If I understand the KAN-paper correctly, we can expect smoother $\phi$-functions when we use a cascade of KANs.
 
 There are also plenty of things to consider, like bounding the outputs to a given bound, possibly allowing the last layer's output to be unbounded. That's why I only use one layer right now... Obviously, I will fix this is version 0.2 of this project.
+
+# Cascaded KAN
+
+I will try a slightly different approach from the famous KAN-paper. They reason that you might want to scale the weights to control eventual growth in the parameters. Since the inputs are defined on an interval, for which the spline is defined, I choose that interval to the the unit. To enforce that I just put a sigmoid inbetween each MxN KAN.
+
+My final network (before softmax etc) becomes
+
+$$
+\bar y = (\Phi^{L-1}\circ\sigma)\circ(\Phi^{L-2}\circ\sigma)\circ\ldots\circ(\Phi^1\circ\sigma)\circ\Phi^0,
+$$
+
+i.e. we get $L$ different $\phi$ with $L-1$ different $\sigma$ inbetween them.
+
+A first test with $L=3$, with sizes $4,4,3,3$ i.e.
+
+$$
+\Phi^0,\quad 4\times 4, \\
+\Phi^1,\quad 4\times 3, \\
+\Phi^2,\quad 3\times 3,
+$$
+
+each element in $\Phi$ having 8 parameters, giving a total of 296 parameters.
+
+Optimizing this network gives a 100% accuracy, with the complete inverse crime.
+
+A somewhat frustrating remark about not being too smart about the forward computation. I used conditional vector operations, with `torch.where(cond,true_statement,false_statement)`, and if the `cond` was false, the true_condition was still computed somehow, which caused trouble for the back propagation. I reverted back to using if statements, and there were no more problems. The error messages where very cryptic, and I scratched my head for most of the day.
