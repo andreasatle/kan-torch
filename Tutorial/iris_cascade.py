@@ -29,7 +29,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(kanCascade.parameters(), lr=0.01)
 # Training loop
 num_epochs = 500
-num_batch = 5
+num_batch = 3
 for epoch in range(num_epochs):
     for batch in range(num_batch):
         x_data_batch = x_data[:,batch::num_batch]
@@ -41,8 +41,7 @@ for epoch in range(num_epochs):
         y_pred = kanCascade(x_data_batch)
 
         # Compute loss
-        y_pred_T = y_pred.T
-        loss = criterion(y_pred_T, y_data_batch)
+        loss = criterion(y_pred.T, y_data_batch)
 
         # Backward pass
         loss.backward()
@@ -54,8 +53,8 @@ for epoch in range(num_epochs):
     if (epoch + 1) % 10 == 0:
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
-kanCascade.plot()
+#kanCascade.plot()
 y_pred = kanCascade(x_data)
 
-print(f"Misclassified: {torch.sum(torch.argmax(y_pred, dim=1)!=y_data)} / {y_data.size(0)}")
+print(f"Misclassified: {torch.sum(torch.argmax(y_pred, dim=0)!=y_data)} / {y_data.size(0)}")
 param_dump(kanCascade)
