@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from Tutorial.kan_1xn import Kan1xN
 import matplotlib.pyplot as plt
+import numpy as np
 
 class KanMxN(nn.Module):
     def __init__(self, n_in, n_out, n_params, degree, lb=None, ub=None):
@@ -24,14 +25,14 @@ class KanMxN(nn.Module):
         out_list = torch.stack([self.kan1xNs[i](x[i]) for i in range(self.n_in)])
         return torch.sum(out_list, dim=0)
 
-    def plot(self):
-        idx = 0
-        for i in range(self.n_in):
-            lb, ub = self.lb[i], self.ub[i]
-            x = torch.linspace(lb, ub, 100)
-            y = self.kan1xNs[i](x)
-            for j in range(self.n_out):
-                idx += 1
-                plt.subplot(self.n_in, self.n_out, idx)
-                plt.plot(x.detach().numpy(), y[j,:].detach().numpy(), label=f"y_{j+1}") 
-        plt.show()
+    #def plot(self):
+    #    idx = 0
+    #    for i in range(self.n_in):
+    #        lb, ub = self.lb[i], self.ub[i]
+    #        x = torch.linspace(lb, ub, 100)
+    #        y = self.kan1xNs[i](x).detach().numpy()
+    #        for j in range(self.n_out):
+    #            idx += 1
+    #            plt.subplot(self.n_in, self.n_out, idx)
+    #            plt.plot(x, y[j], label=f"y_{j+1}") 
+    #    plt.show()

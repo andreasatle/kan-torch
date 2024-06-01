@@ -10,9 +10,9 @@ iris = load_iris()
 X, y = iris.data.T, iris.target
 x_data = torch.tensor(X, dtype=torch.float32)
 y_data = torch.tensor(y, dtype=torch.long)
-lb = torch.min(x_data,dim=0).values-0.1
-ub = torch.max(x_data,dim=0).values+0.1
-
+lb = torch.min(x_data,dim=1).values-0.1
+ub = torch.max(x_data,dim=1).values+0.1
+print(lb,ub)
 def param_dump(model):
     for name, par in model.named_parameters():
         print(name, par.data)
@@ -26,7 +26,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(kanMxN.parameters(), lr=0.01)
 
 # Training loop
-num_epochs = 1500
+num_epochs = 1800
 num_batch = 5
 for epoch in range(num_epochs):
     for batch in range(num_batch):
@@ -51,7 +51,7 @@ for epoch in range(num_epochs):
     if (epoch + 1) % 100 == 0:
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
-kanMxN.plot()
+#kanMxN.plot()
 y_pred = kanMxN(x_data)
 print(f"Misclassified: {torch.sum(torch.argmax(y_pred, dim=0)!=y_data)} / {y_data.size(0)}")
 param_dump(kanMxN)

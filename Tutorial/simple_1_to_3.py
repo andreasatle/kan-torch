@@ -33,7 +33,7 @@ def objective_function(y_pred, y_true):
 optimizer = optim.Adam(kan1xN.parameters(), lr=0.01)
 
 # Training loop
-num_epochs = 500
+num_epochs = 1500
 num_batches = 5
 for epoch in range(num_epochs):
     for batch in range(num_batches):
@@ -45,7 +45,6 @@ for epoch in range(num_epochs):
 
         # Forward pass, always use the same `x_data`
         y_pred_batch = kan1xN(x_data_batch)
-
         # Compute loss
         loss = objective_function(y_pred_batch, y_data_batch)
 
@@ -62,7 +61,7 @@ for epoch in range(num_epochs):
 # Plot the data and the fitted spline
 knot_data = torch.stack([kan1xN.knots[2:-2], kan1xN.knots[2:-2], kan1xN.knots[2:-2]],dim=1)
 plt.scatter(xx_data, y_data, label='Data')
-plt.scatter(knot_data, kan1xN(kan1xN.knots[2:-2]).detach().numpy(), color='red', label='Fitted knots')
+#plt.scatter(knot_data, kan1xN(kan1xN.knots[2:-2]).detach().numpy(), color='red', label='Fitted knots')
 plt.plot(xx_data.T, kan1xN(x_data).detach().numpy().T, color='red', label='Fitted model')
 plt.plot(xx_data.T, exact_solution.detach().numpy().T, color='green', label='Exact solution')
 plt.legend()
