@@ -16,41 +16,40 @@ y_data = torch.tensor(y, dtype=torch.long)
 lb = torch.min(x_data,dim=1).values-0.1
 ub = torch.max(x_data,dim=1).values+0.1
 
+
+# Instantiate the KanCascade model
+kanCascade = KanCascade(ns=[4,4,3,3], n_params=8, degree=3, lb=lb, ub=ub)
+# Define the optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(kanCascade.parameters(), lr=0.01)
+def closure(x,y):
+    def inner_closure():
+        optimizer.zero_grad()  # Clear the gradients
+        y_pred = kanCascade(x)  # Forward pass
+        loss = criterion(y_pred.T, y)  # Compute the loss
+        loss.backward()  # Backward pass
+        return loss
+    return inner_closure
+
 def param_dump(model):
     for name, par in model.named_parameters():
         print(name, par.data)
 
-# Instantiate the KanCascade model
-kanCascade = KanCascade(ns=[4,4,3,3], n_params=8, degree=3, lb=lb, ub=ub)
 #param_dump(kanCascade)
 
-# Define the optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(kanCascade.parameters(), lr=0.01)
 # Training loop
-num_epochs = 500
+num_epochs = 200
 num_batch = 3
 for epoch in range(num_epochs):
     for batch in range(num_batch):
         x_data_batch = x_data[:,batch::num_batch]
         y_data_batch = y_data[batch::num_batch]
         # Zero the gradients
-        optimizer.zero_grad()
-
-        # Forward pass, always use the same `x_data`
-        y_pred = kanCascade(x_data_batch)
-
-        # Compute loss
-        loss = criterion(y_pred.T, y_data_batch)
-
-        # Backward pass
-        loss.backward()
-
-        # Update spline coeffs
-        optimizer.step()
+        optimizer.step(closure(x_data_batch, y_data_batch))
 
     # Print progress
     if (epoch + 1) % 10 == 0:
+        loss = closure(x_data, y_data)()
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
 
 #kanCascade.plot()

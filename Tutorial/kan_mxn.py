@@ -14,7 +14,7 @@ class KanMxN(nn.Module):
         if lb is not None:
             self.lb = lb
         else: 
-            self.lb = torch.zeros(n_in)
+            self.lb = -torch.ones(n_in)
         if ub is not None:
             self.ub = ub
         else:

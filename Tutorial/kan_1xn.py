@@ -10,8 +10,18 @@ class Kan1xN(nn.Module):
         self.lb = lb
         self.ub = ub
         self.knots = self.get_knots(lb, ub)
+
         self.params = nn.Parameter(torch.zeros(self.n_out, self.n_params))
-    
+        self.params.data = self.init_params()
+        
+    def init_params(self):
+
+        x = torch.linspace(self.lb, self.ub, self.n_params*self.degree)
+        lin_x = (x-self.lb)/(self.ub-self.lb)
+        phis = self.eval_basis(x).T
+        params = torch.linalg.lstsq(phis, lin_x.unsqueeze(1)).solution
+        return params.T + 0.1*torch.randn_like(self.params.data)
+
     def eval_basis(self, x):
         
         n_knots = len(self.knots)
@@ -35,17 +45,17 @@ class Kan1xN(nn.Module):
                     right_term = torch.zeros_like(x)
                 #left_term = torch.where(left_denom != 0, (x - self.knots[i]) / left_denom, torch.zeros_like(x))
                 #right_term = torch.where(right_denom != 0, (self.knots[i+d+1] - x) / right_denom, torch.zeros_like(x))
-
                 phis2[i] = left_term * phis[i] + right_term * phis[i+1]
             phis = phis2
 
         # Add the SiLU activation function as the last phi
         phis[n_knots-self.degree-1] = nn.SiLU()(x)
+        #torch.zeros_like(x)
         
         return phis[:n_knots-self.degree]
 
     def get_knots(self, a, b):
-        return (b-a)*torch.cat((torch.zeros(self.degree),torch.linspace(0,1,self.n_params-self.degree),torch.ones(self.degree))) + a
+        return (b-a)*torch.cat((torch.zeros(self.degree),torch.linspace(0,1,self.n_params-self.degree),torch.ones(self.degree))) + a#0.5*(a+b)
 
     def forward(self, x):
         return self.params @ self.eval_basis(x)
