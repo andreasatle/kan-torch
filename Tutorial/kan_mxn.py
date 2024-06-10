@@ -14,7 +14,7 @@ class KanMxN(nn.Module):
         if lb is not None:
             self.lb = lb
         else: 
-            self.lb = -torch.ones(n_in)
+            self.lb = torch.zeros(n_in)
         if ub is not None:
             self.ub = ub
         else:
@@ -25,14 +25,18 @@ class KanMxN(nn.Module):
         out_list = torch.stack([self.kan1xNs[i](x[i]) for i in range(self.n_in)])
         return torch.sum(out_list, dim=0)
 
-    #def plot(self):
-    #    idx = 0
-    #    for i in range(self.n_in):
-    #        lb, ub = self.lb[i], self.ub[i]
-    #        x = torch.linspace(lb, ub, 100)
-    #        y = self.kan1xNs[i](x).detach().numpy()
-    #        for j in range(self.n_out):
-    #            idx += 1
-    #            plt.subplot(self.n_in, self.n_out, idx)
-    #            plt.plot(x, y[j], label=f"y_{j+1}") 
-    #    plt.show()
+    def plot(self, title=None):
+        idx = 0
+        for i in range(self.n_in):
+            lb, ub = self.lb[i], self.ub[i]
+            x = torch.linspace(lb, ub, 100)
+            y = self.kan1xNs[i](x).detach().numpy()
+            for j in range(self.n_out):
+                idx += 1
+                plt.subplot(self.n_in, self.n_out, idx)
+                plt.plot(x, y[j], label=f"y_{j+1}") 
+        if title is not None:
+            plt.suptitle(title)
+            plt.savefig(f"{title}.png")
+            plt.close()
+        #plt.show()

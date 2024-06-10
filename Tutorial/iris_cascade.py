@@ -46,11 +46,12 @@ for epoch in range(num_epochs):
         y_data_batch = y_data[batch::num_batch]
         # Zero the gradients
         optimizer.step(closure(x_data_batch, y_data_batch))
-
+        kanCascade.plot()
     # Print progress
     if (epoch + 1) % 10 == 0:
         loss = closure(x_data, y_data)()
         print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+        
 
 #kanCascade.plot()
 y_pred = kanCascade(x_data)

@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import matplotlib.pyplot as plt
+
 from Tutorial.kan_mxn import KanMxN
 
 class KanCascade(nn.Module):
@@ -21,3 +23,10 @@ class KanCascade(nn.Module):
             #z = self.tanh(y)
             y = self.kanMxNs[i](y)
         return y
+
+    def plot(self):
+        idx = 0
+        kanNames = [f"KanMxN_{i}" for i in range(len(self.kanMxNs))]
+        for i in range(len(self.kanMxNs)):
+            #plt.figure()
+            self.kanMxNs[i].plot(kanNames[i])
